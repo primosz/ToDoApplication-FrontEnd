@@ -20,6 +20,20 @@ for (let i = 0; i < arrayOfSortContainers.length; i++) {
             binContainer.style.display = 'none';
             binColorContainer.style.display = 'none';
             if (binContainer.firstElementChild) {
+
+                const key = binContainer.firstElementChild.children[0].getAttribute("key");
+
+                console.log(key);
+                const urlParams = new URLSearchParams(window.location.search);
+                const myParam = urlParams.get('myParam');
+                fetch(`https://to-do-a.herokuapp.com/api/mytasks/${key}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-auth-token": myParam
+                    }
+                })
+                .catch(err => console.log (err))
                 binContainer.removeChild(binContainer.firstElementChild);
             }
         },
@@ -38,6 +52,7 @@ let colNumModal;
 let editItem = null;
 const description = document.getElementById('modalDescription');
 const title = document.getElementById('modalTitle');
+const tags = document.getElementById('modalTags');
 
 closeBtn.addEventListener('click', closeModal);
 window.addEventListener('click', outsideClick);
@@ -50,14 +65,48 @@ function openModal(colNum, edit = false, toEdit = null) {
     colNumModal = colNum;
     editItem = toEdit;
     if (editItem !== null) {
+
         description.innerText = editItem.querySelector('.desc').innerText;
         title.innerText = editItem.querySelector('.title').innerText;
+        tags.innerText = editItem.getAttribute("tags");
+        document.getElementById("save-button").setAttribute("onclick", "closeModalAndUpdateTask()");
     }
+}
+
+function closeModalAndUpdateTask(){
+    //console.log(document.getElementById(editItem.getAttribute("id")).parentNode.parentNode.getAttribute("id"));
+    const body={
+        "title": title.innerText,
+        "description": description.innerText,
+        "tags": tags.innerText.split(','),
+        "status": document.getElementById(editItem.getAttribute("id")).parentNode.parentNode.getAttribute("id")
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('myParam');
+    console.log(editItem.getAttribute("id"));
+
+    fetch(`https://to-do-a.herokuapp.com/api/mytasks/${editItem.getAttribute("id")}`, {
+            method: "PUT",
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": myParam
+            }
+        })
+        .then(res =>{ if(res) console.log("Zaktualizowano")
+        editItem.querySelector('.desc').innerText = body.description;
+        editItem.querySelector('.title').innerText = body.title;
+        editItem.setAttribute("tags",body.tags.toString());    
+    })
+        .catch(err => alert(err));
+    closeModal();
 }
 
 function closeModal() {
     modal.style.display = 'none';
     clearModalDivs();
+    document.getElementById("save-button").setAttribute("onclick", "newTask()");
 }
 
 function outsideClick(e) {
@@ -75,7 +124,7 @@ function editClick(e) {
 async function newTask() {
     const description = document.getElementById('modalDescription').innerText;
     const title = document.getElementById('modalTitle').innerText;
-    const tags = [...document.getElementById('modalTags').innerText];
+    const tags = document.getElementById('modalTags').innerText.split(',');
     let status = '';
     
 
@@ -138,7 +187,7 @@ async function newTask() {
         .then(res => {
             const el = document.createElement("div");
             let newDiv = "";
-            newDiv += `<div key=${res._id} class="column__task" spellcheck="false"><b class="title">${res.title} </b> <span class="desc">
+            newDiv += `<div id=${res._id} tags=${res.tags.toString()} class="column__task" spellcheck="false"><b class="title">${res.title} </b> <span class="desc">
                     </br>${res.description}</span></div>`;
             el.innerHTML = newDiv;
             document.getElementById(res.status).appendChild(el);

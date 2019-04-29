@@ -4,7 +4,7 @@
  * @author	owenm    <owen23355@gmail.com>
  * @license MIT
  */
-
+let checkState='';
 (function sortableModule(factory) {
 	"use strict";
 
@@ -624,6 +624,7 @@
 		},
 
 		_onTapStart: function (/** Event|TouchEvent */evt) {
+			checkState = evt.srcElement.parentElement.parentElement.getAttribute("id");
 			if (!evt.cancelable) return;
 			var _this = this,
 				el = this.el,
@@ -1440,6 +1441,8 @@
 		},
 
 		_onDrop: function (/**Event*/evt) {
+			
+
 			var el = this.el,
 				options = this.options;
 			awaitingDragStarted = false;
@@ -1551,6 +1554,31 @@
 
 			}
 			this._nulling();
+			//console.log(evt.srcElement.querySelector('.desc').innerText);
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const myParam = urlParams.get('myParam');
+			if (checkState != evt.path[3].children[1].getAttribute("id")){
+				const body = {
+					"title": evt.srcElement.querySelector('.title').innerText,
+					"description": evt.srcElement.querySelector('.desc').innerText,
+					"tags": [...evt.srcElement.getAttribute('tags')],
+					"status": evt.path[3].children[1].getAttribute("id")
+				}
+				fetch(`https://to-do-a.herokuapp.com/api/mytasks/${evt.srcElement.getAttribute("key")}`, {
+						method: "PUT",
+						body: JSON.stringify(body),
+						headers: {
+							"Content-Type": "application/json",
+							"x-auth-token": myParam
+						}
+					})
+					.then(res => {
+						if (res) console.log('Zaktualizowano')
+					})
+					.catch(err => console.log(err));
+			}
+			
 		},
 
 		_nulling: function() {

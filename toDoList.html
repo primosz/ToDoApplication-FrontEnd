@@ -68,17 +68,19 @@
     })
         .then(res => res.json())
         .then(res => {
-            for (i=0;i<res.length;i++){
-                const el = document.createElement("div");
-                let newDiv = "";
-                newDiv += `<div key=${res[i]._id} class="column__task" spellcheck="false"><b class="title">${res[i].title} </b> <span class="desc">
-                        </br>${res[i].description}</span></div>`;
-                el.innerHTML = newDiv;
-                document.getElementById(res[i].status).appendChild(el);
+            if(res){
+                for (i=0;i<res.length;i++){
+                    const el = document.createElement("div");
+                    let newDiv = "";
+                    newDiv += `<div id=${res[i]._id} tags=${res[i].tags.toString()} class="column__task" spellcheck="false"><b class="title">${res[i].title} </b> <span class="desc">
+                            </br>${res[i].description}</span></div>`;
+                    el.innerHTML = newDiv;
+                    document.getElementById(res[i].status).appendChild(el);
                 }
+            }
             
         })
-        .catch(err => alert(err));
+        .catch(err => alert('W tej chwili nie można pobrać Twoich tasków'));
 
     }
 
