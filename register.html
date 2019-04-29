@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang=pl>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="stylesheet" href="https://bootswatch.com/4/minty/bootstrap.min.css" />
+    <title>Register</title>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-md-6 m-auto">
+                <div class="card card-body">
+                    <h1 class="text-center mb-3">
+                        <i class="fas fa-user-plus"></i> Rejestracja
+                    </h1>
+
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Nazwa</label>
+                            <input type="name" id="name" name="name" class="form-control" placeholder="Wprowadź nazwę"
+                                required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                placeholder="Wprowadź email" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Hasło</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Stwórz Hasło" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="save()">
+                            Zarejestruj
+                        </button>
+                        <p class="lead mt-4">
+                            Masz konto? <a href="./index.html">Zaloguj</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    /* when user log to their account */
+    let user;
+    document.querySelector(".btn").addEventListener("click", function (event) {
+        event.preventDefault()
+    });
+    const save = async () => {
+        var name = document.getElementById("name").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        whenUserLogIn(name, email, password);
+    }
+    const whenUserLogIn = async (name, email, password) => {
+        var userToLogIn = {
+            "name": name,
+            "email": email,
+            "password": password
+        }
+
+        /* AUTH */
+        await fetch('https://to-do-a.herokuapp.com/api/users', {
+            method: "POST",
+            body: JSON.stringify(userToLogIn),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => res.text())
+            .then(res => {
+                console.log(res)
+                if (res[0] !== "{") {
+                    return alert(res);
+                }
+                else {
+                    return window.location.href = "./index.html"
+                    
+                }
+            })
+            .catch(err => console.log(err));
+    }
+</script>
+
+
+</html>

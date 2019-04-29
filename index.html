@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang=pl>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="stylesheet" href="https://bootswatch.com/4/minty/bootstrap.min.css" />
+    <title>Login</title>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-md-6 m-auto">
+                <div class="card card-body">
+                    <h1 class="text-center mb-3"><i class="fas fa-sign-in-alt"></i> Login</h1>
+                        <div class="form-group">
+                            <label for="text">Email</label>
+                            <input type="email" id="login" name="email" class="form-control" placeholder="Wprowadź email" />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Hasło</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Wprowadź hasło" />
+                        </div>
+                        <button type="submit" id="button" onclick="save()"
+                            class="btn btn-primary btn-block">Zaloguj</button>
+                    </form>
+                    <p class="lead mt-4">
+                        Nie masz konta? <a href="./register.html">Zarejestruj</a>
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+<script>
+    /* when user log to their account */
+    let user;
+    const save = () => {
+        var login = document.getElementById("login").value;
+        var password = document.getElementById("password").value;
+        whenUserLogIn(login, password);
+    }
+    const whenUserLogIn = async (login, password) => {
+        var userToLogIn = {
+            "email": login,
+            "password": password
+        }
+        /* AUTH */
+        await fetch('https://to-do-a.herokuapp.com/api/auth', {
+                method: "POST",
+                body: JSON.stringify(userToLogIn),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(res => res.text())
+            .then(res =>{console.log(res)
+                if(res=='Invalid email or password'){
+                    return alert("Invalid email or password")
+                } 
+                else{
+                    var queryString = `?myParam=${res}`;
+                    window.location.href = "./toDoList.html" + queryString;
+                }
+            })
+            .catch(err => console.log(err));
+        }
+        
+    
+</script>
+
+</html>
