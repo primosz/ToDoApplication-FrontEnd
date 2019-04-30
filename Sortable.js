@@ -1565,7 +1565,7 @@ let checkState='';
 					"tags": [...evt.srcElement.getAttribute('tags')],
 					"status": evt.path[3].children[1].getAttribute("id")
 				}
-				fetch(`https://to-do-a.herokuapp.com/api/mytasks/${evt.srcElement.getAttribute("key")}`, {
+				fetch(`https://to-do-a.herokuapp.com/api/mytasks/${evt.srcElement.getAttribute("id")}`, {
 						method: "PUT",
 						body: JSON.stringify(body),
 						headers: {
